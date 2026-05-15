@@ -1,0 +1,765 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+// functions
+// if line fails ask for new input
+bool error();
+// list all components and stock
+void list();
+// check in or out a component
+void check();
+
+// components and their stocks
+vector<string> resistors = {
+	"1 ohm", "1.2 ohm", "1.5 ohm", "1.8 ohm", "2.2 ohm", "2.7 ohm", "3.3 ohm", "3.9 ohm", "4.7 ohm", "5.6 ohm",
+	"6.8 ohm", "8.2 ohm", "10 ohm", "12 ohm", "15 ohm", "18 ohm", "22 ohm", "27 ohm", "33 ohm", "39 ohm",
+	"47 ohm", "56 ohm", "68 ohm", "82 ohm", "100 ohm", "120 ohm", "150 ohm", "180 ohm", "200 ohm", "220 ohm",
+	"270 ohm", "300 ohm", "330 ohm", "390 ohm", "470 ohm", "560 ohm", "620 ohm", "680 ohm", "820 ohm", "1k ohm",
+	"1.2k ohm", "1.5k ohm", "1.8k ohm", "2.2k ohm", "2.7k ohm", "3.3k ohm", "3.9k ohm", "4.7k ohm", "5.6k ohm", "6.8k ohm",
+	"8.2k ohm", "10k ohm", "12k ohm", "15k ohm", "18k ohm", "22k ohm", "27k ohm", "33k ohm", "39k ohm", "47k ohm",
+	"56k ohm", "68k ohm", "75k ohm", "82k ohm", "100k ohm", "120k ohm", "150k ohm", "180k ohm", "220k ohm", "270k ohm",
+	"330k ohm", "390k ohm", "470k ohm", "560k ohm", "680k ohm", "820k ohm", "1M ohm","4.7M ohm","10M ohm", "22M ohm",
+};
+
+vector<int> Rstock = {
+	64, 98, 98, 100, 82, 100, 87, 90, 98, 91, 93, 81, 59, 95, 83, 87,
+	91, 82, 261, 79, 143, 23, 81, 75, 24, 18, 519, 450, 31, 26, 459,
+	214, 595, 23, 357, 359, 266, 26, 35, 43, 390, 62, 255, 353, 291,
+	306, 103, 428, 275, 225, 194, 223, 64, 71, 1, 279, 350, 87, 118,
+	92, 295, 93, 86, 114, 82, 253, 92, 169, 90, 75, 90, 386, 75, 216, 94, 103, 92, 92, 1, 7, 37
+};
+
+vector<string> henrys = {
+	"10 uH", "22 uH", "47 uH", "220 uH", "1 mH", "2.2 mH", "4.7 mH", "10 mH", "22 mH", "33 mH", "47 mH", "100 mH"
+};
+
+vector<int> Hstock = {
+	81,88, 90, 60, 48, 42, 45, 33, 64, 50, 59, 76
+};
+
+vector<string> batteries = {
+	"9 V", "1.5 V"
+};
+
+vector<int> Bstock = {
+	6,3
+};
+
+vector<string> breadboard = {
+	"breadboard"
+};
+
+vector<int> BRstock = {
+	16
+};
+
+vector<string> pot = {
+	"1k ohm pot", "5k ohm pot", "50k ohm pot", "100k ohm pot", "1M ohm pot", "2M ohm pot"
+};
+
+vector<int> Pstock = {
+	1, 6, 1, 11, 1, 1,
+};
+
+vector<string> capacitors = {
+	"474k Radial","105K Radial","102K Radial","224K Radial","104K Radial","473K Radial","103K Radial","101K Radial",".1 J Radial",
+	".47 Micro F","1 Micro F","220 Micro F","4.7 Micro F  Ax","4.7 Micro F","330 Micro F","470 Micro F","22 Micro F",
+	"10 Micro F","4700 Micro F","47 Micro F","1000 Micro F","2200 Micro F","100 Micro F Ax","33 Micro F","100 Micro F"
+};
+
+vector<int> Cstock = {
+	25, 91, 149, 7, 2, 14, 14, 2, 2, 379, 203,
+	17, 111, 253, 0, 47, 946, 700, 0, 481, 31, 38, 2, 308, 271
+};
+
+vector<string> icChips = {
+	"IC chip 7409","IC chip 4001","IC chip 4017","IC chip 4029","IC chip 74157","IC chip 9526","IC chip 7420",
+	"IC chip 74595","IC chip 7719","IC chip 4511","IC chip 9525","IC chip 74151","IC chip 74193","IC chip 4011",
+	"IC chip 7488","IC chip 7489","IC chip 7402","IC chip 7411","IC chip 7409","IC chip 7490","IC chip 9226",
+	"IC chip 7414","IC chip 7400","IC chip 7408","IC chip 7402","IC chip 74147","IC chip 74037","IC chip 7432",
+	"IC chip 7486","IC chip 7451","IC chip MH7489","IC chip 7932","IC chip 7485","IC chip 74138","IC chip 7474",
+	"IC chip 74154","IC chip 74125","IC chip 74190","IC chip 7430","IC chip 74191","IC chip 74107","IC chip 74192",
+	"IC chip 74148","IC chip 7495","IC chip 7447","IC chip 7442","IC chip 74121","IC chip 7475","IC chip 74163",
+	"IC chip 74150","IC chip 74164"
+};
+
+vector<int> ICstock = {
+	7, 5, 8, 2, 3, 3, 2, 1, 4, 2, 5, 1, 2, 8, 1, 26, 89, 84, 7, 9, 3, 146, 77, 4, 9, 14, 28,
+	42, 89, 27, 197, 75, 70, 33, 47, 84, 25, 42, 74, 74, 56, 283, 64, 69, 30, 3, 51, 47, 22, 30, 136
+};
+
+vector<string> BandS = {
+	"button", "8 prong", "4 prong","3 prong","2 prong"
+};
+
+vector<int> BSstock = {
+	4, 1, 2, 10, 1
+};
+
+int main() {
+	int Ans;
+    char again;
+
+	cout<<"┌──────────────────────────┐\n";
+	cout<<"│   COMPONENT INVENTORY    │\n";
+	cout<<"└──────────────────────────┘\n";
+
+    do{
+	
+	cout<<"\nWhat would you like to do?\n";
+	cout<<"1) List all components\n";
+	cout<<"2) Check in or out a component\n";
+
+	while(true) {
+		cin>>Ans;
+
+		if(error()) continue;
+
+		if(Ans<1||Ans>2) {
+			cout<<"Invalid input. Please try again.\n";
+			continue;
+		}
+		break;
+	}
+
+	if(Ans==1) {
+		list();
+	} else {
+		check();
+	}
+	
+	cout<<"\nCONTINUE (Y/N)?\n";
+    
+    while(true){
+    	cin>>again;
+        
+        if (error()) continue;
+        	
+        if(again!='y'&&again!='Y'&&again!='n'&&again!='N'){
+        cout<<"Invalid input. Please try again.";
+        continue;
+        }
+        break;
+	}
+	
+	} while (again=='y'||again=='Y');
+	
+	return 0;
+}
+
+bool error() {
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout<<"Invalid input. Please try again.\n";
+		return true;
+	}
+	return false;
+}
+
+void list() {
+	cout<<"\n";
+
+	for (int i=0; i<resistors.size(); i++) {
+		cout<<resistors[i]<<": "<<Rstock[i]<<"\n";
+	}
+	for (int i=0; i<henrys.size(); i++) {
+		cout<<henrys[i]<<": "<<Hstock[i]<<"\n";
+	}
+	for (int i=0; i<batteries.size(); i++) {
+		cout<<batteries[i]<<": "<<Bstock[i]<<"\n";
+	}
+	for (int i=0; i<breadboard.size(); i++) {
+		cout<<breadboard[i]<<": "<<BRstock[i]<<"\n";
+	}
+	for (int i=0; i<pot.size(); i++) {
+		cout<<pot[i]<<": "<<Pstock[i]<<"\n";
+	}
+	for (int i=0; i<capacitors.size(); i++) {
+		cout<<capacitors[i]<<": "<<Cstock[i]<<"\n";
+	}
+	for (int i=0; i<icChips.size(); i++) {
+		cout<<icChips[i]<<": "<<ICstock[i]<<"\n";
+	}
+	for (int i=0; i<BandS.size(); i++) {
+		cout<<BandS[i]<<": "<<BSstock[i]<<"\n";
+	}
+}
+
+void check() {
+	int checkAns;
+	int group;
+	int choice;
+	int amount;
+
+	cout<<"\nWhat are you doing with your component?\n";
+	cout<<"1) Checking out a component\n";
+	cout<<"2) Returning a component\n";
+
+	while(true) {
+		cin>>checkAns;
+
+		if(error()) continue;
+
+		if(checkAns<1||checkAns>2) {
+			cout<<"Invalid input. Please try again.\n";
+			continue;
+		}
+		break;
+	}
+
+	cout << "\nSelect Component Group\n";
+	cout << "1) Resistors\n";
+	cout << "2) Inductors\n";
+	cout << "3) Batteries\n";
+	cout << "4) Breadboards\n";
+	cout << "5) Potentiometers\n";
+	cout << "6) Capacitors\n";
+	cout << "7) IC Chips\n";
+	cout << "8) Buttons & Switches\n";
+
+	while(true) {
+		cin>>group;
+
+		if(error()) continue;
+
+		if(group<1||group>8) {
+			cout<<"Invalid input. Please try again.\n";
+			continue;
+		}
+		break;
+	}
+
+	if(group==1) {
+		cout<<"\n";
+
+		for(int i=0; i<resistors.size(); i++) {
+			cout<<i+1<<") "<<resistors[i]<<endl;
+		}
+
+		cout<<"\nWhat resistor value?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>resistors.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<resistors[choice]<<"\n";
+		cout<<"Current stock: "<<Rstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>Rstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			Rstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			Rstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<Rstock[choice]<<"\n";
+	}
+
+	else if(group==2) {
+		cout<<"\n";
+
+		for(int i=0; i<henrys.size(); i++) {
+			cout<<i+1<<") "<<henrys[i]<<endl;
+		}
+
+		cout<<"\nWhat inductor value?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>henrys.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<henrys[choice]<<"\n";
+		cout<<"Current stock: "<<Hstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>Hstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			Hstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			Hstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<Hstock[choice]<<"\n";
+	}
+
+	else if(group==3) {
+		cout<<"\n";
+
+		for(int i=0; i<batteries.size(); i++) {
+			cout<<i+1<<") "<<batteries[i]<<endl;
+		}
+
+		cout<<"\nWhat battery value?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>batteries.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<batteries[choice]<<"\n";
+		cout<<"Current stock: "<<Bstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>Bstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			Bstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			Bstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<Bstock[choice]<<"\n";
+	}
+
+	else if(group==4) {
+		cout<<"\n";
+
+		for(int i=0; i<breadboard.size(); i++) {
+			cout<<i+1<<") "<<breadboard[i]<<endl;
+		}
+
+		cout<<"\nWhat breadboard?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>breadboard.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<breadboard[choice]<<"\n";
+		cout<<"Current stock: "<<BRstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>BRstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			BRstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			BRstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<BRstock[choice]<<"\n";
+	}
+
+	else if(group==5) {
+		cout<<"\n";
+
+		for(int i=0; i<pot.size(); i++) {
+			cout<<i+1<<") "<<pot[i]<<endl;
+		}
+
+		cout<<"\nWhat potentiometer value?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>pot.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<pot[choice]<<"\n";
+		cout<<"Current stock: "<<Pstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>Pstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			Pstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			Pstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<Pstock[choice]<<"\n";
+	}
+	
+	else if(group==6) {
+		cout<<"\n";
+
+		for(int i=0; i<capacitors.size(); i++) {
+			cout<<i+1<<") "<<capacitors[i]<<endl;
+		}
+
+		cout<<"\nWhat capacitor value?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>capacitors.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<capacitors[choice]<<"\n";
+		cout<<"Current stock: "<<Cstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>Cstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			Cstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			Cstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<Cstock[choice]<<"\n";
+	}
+
+	else if(group==7) {
+		cout<<"\n";
+
+		for(int i=0; i<icChips.size(); i++) {
+			cout<<i+1<<") "<<icChips[i]<<endl;
+		}
+
+		cout<<"\nWhat IC chip?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>icChips.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<icChips[choice]<<"\n";
+		cout<<"Current stock: "<<ICstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>ICstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			ICstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			ICstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<ICstock[choice]<<"\n";
+	}
+
+	else if(group==8) {
+		cout<<"\n";
+
+		for(int i=0; i<BandS.size(); i++) {
+			cout<<i+1<<") "<<BandS[i]<<endl;
+		}
+
+		cout<<"\nWhat button or switch?\n";
+
+		while(true) {
+			cin>>choice;
+
+			if(error()) continue;
+
+			if(choice<1||choice>BandS.size()) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		choice--;
+
+		cout<<"\nSelected component: "<<BandS[choice]<<"\n";
+		cout<<"Current stock: "<<BSstock[choice]<<"\n";
+
+		if(checkAns==1) {
+			cout<<"\nHow many are you checking OUT?\n";
+		} else {
+			cout<<"\nHow many are you returning?\n";
+		}
+
+		while(true) {
+			cin>>amount;
+
+			if(error()) continue;
+
+			if(amount<1) {
+				cout<<"Invalid input. Please try again.\n";
+				continue;
+			}
+			break;
+		}
+
+		if(checkAns==1) {
+
+			if(amount>BSstock[choice]) {
+				cout<<"\nNot enough stock.\n";
+				return;
+			}
+
+			BSstock[choice]-=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" removed.\n";
+		} else {
+
+			BSstock[choice]+=amount;
+
+			cout<<"\nStock updated.\n";
+			cout<<amount<<" added.\n";
+		}
+
+		cout<<"\nNew quantity: "<<BSstock[choice]<<"\n";
+	}
+
+	return;
+}
