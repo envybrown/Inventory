@@ -103,9 +103,9 @@ int main() {
 	int Ans;
     char again;
 
-	cout<<"┌──────────────────────────┐\n";
-	cout<<"│   COMPONENT INVENTORY    │\n";
-	cout<<"└──────────────────────────┘\n";
+	cout<<"============================\n";
+	cout<<"     COMPONENT INVENTORY    \n";
+	cout<<"============================\n";
 
     do{
 	
