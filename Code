@@ -1,6 +1,9 @@
+/* This program will list all components and update as components are added and removed */
+
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -108,7 +111,7 @@ int main() {
 	cout<<"============================\n";
 
     do{
-	
+
 	cout<<"\nWhat would you like to do?\n";
 	cout<<"1) List all components\n";
 	cout<<"2) Check in or out a component\n";
@@ -130,23 +133,23 @@ int main() {
 	} else {
 		check();
 	}
-	
+
 	cout<<"\nCONTINUE (Y/N)?\n";
-    
+
     while(true){
     	cin>>again;
-        
+
         if (error()) continue;
-        	
+
         if(again!='y'&&again!='Y'&&again!='n'&&again!='N'){
         cout<<"Invalid input. Please try again.";
         continue;
         }
         break;
 	}
-	
+
 	} while (again=='y'||again=='Y');
-	
+
 	return 0;
 }
 
@@ -161,6 +164,7 @@ bool error() {
 }
 
 void list() {
+	// list
 	cout<<"\n";
 
 	for (int i=0; i<resistors.size(); i++) {
@@ -187,6 +191,38 @@ void list() {
 	for (int i=0; i<BandS.size(); i++) {
 		cout<<BandS[i]<<": "<<BSstock[i]<<"\n";
 	}
+
+	// list to file
+	ofstream myfile("inventory.txt");
+
+	myfile << "INVENTORY:\n\n";
+
+	for (int i=0; i<resistors.size(); i++) {
+		myfile << resistors[i]<<": "<<Rstock[i]<<"\n";
+	}
+	for (int i=0; i<henrys.size(); i++) {
+		myfile << henrys[i]<<": "<<Hstock[i]<<"\n";
+	}
+	for (int i=0; i<batteries.size(); i++) {
+		myfile << batteries[i]<<": "<<Bstock[i]<<"\n";
+	}
+	for (int i=0; i<breadboard.size(); i++) {
+		myfile << breadboard[i]<<": "<<BRstock[i]<<"\n";
+	}
+	for (int i=0; i<pot.size(); i++) {
+		myfile << pot[i]<<": "<<Pstock[i]<<"\n";
+	}
+	for (int i=0; i<capacitors.size(); i++) {
+		myfile << capacitors[i]<<": "<<Cstock[i]<<"\n";
+	}
+	for (int i=0; i<icChips.size(); i++) {
+		myfile << icChips[i]<<": "<<ICstock[i]<<"\n";
+	}
+	for (int i=0; i<BandS.size(); i++) {
+		myfile << BandS[i]<<": "<<BSstock[i]<<"\n";
+	}
+
+	myfile.close();
 }
 
 void check() {
@@ -562,7 +598,7 @@ void check() {
 
 		cout<<"\nNew quantity: "<<Pstock[choice]<<"\n";
 	}
-	
+
 	else if(group==6) {
 		cout<<"\n";
 
@@ -763,3 +799,5 @@ void check() {
 
 	return;
 }
+
+
